@@ -6,6 +6,7 @@
 
 ## 0.6.0
 1. [CDU] Allow SimBrief user IDs as well as usernames - @pareil6 - (pareil6)
+1. [CDU] Scale Simbrief cost indexes to match Honeywell CI range
 
 ## 0.5.0
 1. [FLIGHTMODEL] Reworked AOA table - @donstim - (donbikes#4084)

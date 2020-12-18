@@ -243,7 +243,8 @@ const insertUplink = (mcdu) => {
     */
     setTimeout(() => {
         mcdu.setCruiseFlightLevelAndTemperature(cruiseAltitude);
-        mcdu.tryUpdateCostIndex(costIndex);
+        const costIndexScaled = Math.min(costIndex * parseInt(NXDataStore.get("CONFIG_SIMBRIEF_CI_SCALING", "10")), 999);
+        mcdu.tryUpdateCostIndex(costIndexScaled);
         mcdu.tryUpdateTropo(avgTropopause);
         if (mcdu.page.Current === mcdu.page.InitPageA) {
             CDUInitPage.ShowPage1(mcdu);

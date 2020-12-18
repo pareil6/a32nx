@@ -10,6 +10,8 @@ class CDU_OPTIONS_SIMBRIEF {
 
         const simbriefUserIdString = simbriefUserId ? simbriefUserId : "[ ]";
 
+        const simbriefCostIndexScaling = NXDataStore.get("CONFIG_SIMBRIEF_CI_SCALING", "10");
+
         mcdu.setTemplate([
             ["A32NX OPTIONS"],
             ["", "", "SIMBRIEF PROFILE"],
@@ -18,8 +20,8 @@ class CDU_OPTIONS_SIMBRIEF {
             [`${simbriefUsernameString}[color]blue`],
             ["USER ID"],
             [`${simbriefUserIdString}[color]blue`],
-            [""],
-            [""],
+            ["CI SCALING"],
+            [`${simbriefCostIndexScaling}[color]blue`],
             [""],
             [""],
             [""],
@@ -47,6 +49,20 @@ class CDU_OPTIONS_SIMBRIEF {
             } else {
                 NXDataStore.set("CONFIG_SIMBRIEF_USERID", value);
                 NXDataStore.set("CONFIG_SIMBRIEF_USERNAME", "");
+            }
+            CDU_OPTIONS_SIMBRIEF.ShowPage(mcdu);
+        };
+
+        mcdu.leftInputDelay[2] = () => {
+            return mcdu.getDelayBasic();
+        };
+        mcdu.onLeftInput[2] = (value) => {
+            if (value === FMCMainDisplay.clrValue) {
+                NXDataStore.set("CONFIG_SIMBRIEF_CI_SCALING", "10");
+            } else if (isNaN(value) || parseInt(value) < 0) {
+                mcdu.showErrorMessage("NOT ALLOWED");
+            } else {
+                NXDataStore.set("CONFIG_SIMBRIEF_CI_SCALING", value);
             }
             CDU_OPTIONS_SIMBRIEF.ShowPage(mcdu);
         };
