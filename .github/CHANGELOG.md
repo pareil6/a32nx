@@ -19,6 +19,7 @@
 1. [CDU] Fixed FPLN airways showing as undefined - @pareil6 - (pareil6)
 1. [CDU] Allow SimBrief OFP to override previous flight plan - @pareil6 (pareil6)
 1. [MODEL] Incorporate new Asobo model changes - @pepperoni505 (pepperoni505)
+1. [CDU] Handle corresponding lower/upper airways when importing from SimBrief - @pareil6 (pareil6)
 
 ## 0.5.0
 1. [FLIGHTMODEL] Reworked AOA table - @donstim - (donbikes#4084)

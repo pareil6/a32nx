@@ -1118,9 +1118,15 @@ class FMCMainDisplay extends BaseAirliners {
             const infos = referenceWaypoint.infos;
             if (infos instanceof WayPointInfo) {
                 await referenceWaypoint.infos.UpdateAirways(); // Sometimes the waypoint is initialized without waiting to the airways array to be filled
-                const airway = infos.airways.find(a => {
+                let airway = infos.airways.find(a => {
                     return a.name === airwayName;
                 });
+                // Some upper airways are only stored once as their lower counterpart, so search for the lower airway as well if the search failed
+                if (!airway && airwayName.startsWith("U")) {
+                    airway = infos.airways.find(a => {
+                        return a.name === airwayName.substring(1);
+                    });
+                }
                 if (airway) {
                     const firstIndex = airway.icaos.indexOf(referenceWaypoint.icao);
                     const lastWaypointIcao = airway.icaos.find(icao => icao.substring(7, 12) === lastWaypointIdentPadEnd);
