@@ -234,6 +234,13 @@ class A320_Neo_CDU_MainDisplay extends FMCMainDisplay {
         }, 15000);
 
         SimVar.SetSimVarValue("L:A32NX_GPS_PRIMARY_LOST_MSG", "Bool", 0);
+
+        // If legacy SimBrief username variable is in the DataStore, convert it to a user ID and remove it.
+        const simbriefUsername = NXDataStore.get("CONFIG_SIMBRIEF_USERNAME", "");
+        if (simbriefUsername) {
+            getSimBriefUser(simbriefUsername, this, () => {});
+            NXDataStore.set("CONFIG_SIMBRIEF_USERNAME", "");
+        }
     }
 
     _formatCell(str) {
