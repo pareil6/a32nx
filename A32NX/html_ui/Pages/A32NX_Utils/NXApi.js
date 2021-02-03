@@ -225,6 +225,28 @@ class NXApi {
             aircraftType: acType,
         };
     }
+
+    /*
+    sender: logon code
+    min: message identification number
+    mrn: message reference number
+    resp: response attribute
+    element: element numbers - TODO decode corresponding values?
+    text: free text
+    */
+    static getCpdlcMessages() {
+        return new Promise(function(resolve, reject) {
+            resolve([]);
+        });
+    }
+
+    // note 'resp' is boolean here for yes/no
+    static sendCpdlcMessage(recipient, min, mrn, resp, text) {
+        return new Promise(function resolve, reject) {
+            resolve();
+        };
+    }
+
 }
 
 NXApi.url = "https://api.flybywiresim.com";

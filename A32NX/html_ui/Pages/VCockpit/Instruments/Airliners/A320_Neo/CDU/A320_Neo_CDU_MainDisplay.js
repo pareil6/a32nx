@@ -220,6 +220,41 @@ class A320_Neo_CDU_MainDisplay extends FMCMainDisplay {
                     }
                     console.log("TELEX MSG FETCH FAILED");
                 });
+
+            // Fetch new CPDLC messages
+            // TODO
+            /*NXApi.getCpdlcMessages()
+                .then((data) => {
+                    for (const msg of data) {
+                        const sender = msg["from"]["flight"];
+
+                        const lines = [];
+                        lines.push("FROM " + sender + "[color]cyan");
+                        const incLines = msg["message"].split(";");
+                        incLines.forEach(l => lines.push(l.concat("[color]green")));
+                        lines.push('---------------------------[color]white');
+
+                        const newMessage = { "id": Date.now(), "type": "FREE TEXT (" + sender + ")", "time": '00:00', "opened": null, "content": lines, };
+                        let timeValue = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+                        if (timeValue) {
+                            const seconds = Number.parseInt(timeValue);
+                            const displayTime = Utils.SecondsToDisplayTime(seconds, true, true, false);
+                            timeValue = displayTime.toString();
+                        }
+                        newMessage["time"] = timeValue.substring(0, 5);
+                        this.messages.unshift(newMessage);
+                        toDelete.push(msg["id"]);
+                    }
+
+                    const msgCount = SimVar.GetSimVarValue("L:A32NX_COMPANY_MSG_COUNT", "Number");
+                    SimVar.SetSimVarValue("L:A32NX_COMPANY_MSG_COUNT", "Number", msgCount + toDelete.length);
+                })
+                .catch(err => {
+                    if (err.status === 404 || err === NXApi.disabledError || err === NXApi.disconnectedError) {
+                        return;
+                    }
+                    console.log("CPDLC MSG FETCH FAILED");
+                });*/
         }, NXApi.updateRate);
 
         // Start the check routine for system health and status
