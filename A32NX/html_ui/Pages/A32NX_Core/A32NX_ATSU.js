@@ -249,47 +249,32 @@ const insertUplink = (mcdu) => {
     }, mcdu.getDelayHigh());
 };
 
-const addWaypointAsync = (fix, mcdu, routeIdent, via) => {
+const addWaypointAsync = (fix, mcdu, routeIdent, thisVia, nextVia) => {
     const wpIndex = mcdu.flightPlanManager.getWaypointsCount() - 1;
-    if (via) {
-        return new Promise((res, rej) => {
-            mcdu.insertWaypointsAlongAirway(routeIdent, wpIndex, via, (result) => {
-                if (result) {
-                    console.log("Inserted waypoint: " + routeIdent + " via " + via);
+    return new Promise((res, rej) => {
+        const coords = {
+            lat: fix.pos_lat,
+            long: fix.pos_long
+        };
+        getWaypointByIdentAndCoords(mcdu, routeIdent, coords, (waypoint) => {
+            if (waypoint) {
+                mcdu.flightPlanManager.addWaypoint(waypoint.icao, wpIndex, () => {
+                    waypoint.infos.airwayIn = thisVia;
+                    waypoint.infos.airwayOut = nextVia;
+                    console.log("Inserted waypoint: " + routeIdent);
                     res(true);
-                } else {
-                    console.log('AWY/WPT MISMATCH ' + routeIdent + " via " + via);
-                    mcdu.addNewMessage(NXSystemMessages.awyWptMismatch);
-                    res(false);
-                }
-            });
+                });
+            } else {
+                console.log('NOT IN DATABASE ' + routeIdent);
+                mcdu.addNewMessage(NXSystemMessages.notInDatabase);
+                res(false);
+            }
         });
-    } else {
-        return new Promise((res, rej) => {
-            const coords = {
-                lat: fix.pos_lat,
-                long: fix.pos_long
-            };
-            getWaypointByIdentAndCoords(mcdu, routeIdent, coords, (waypoint) => {
-                if (waypoint) {
-                    mcdu.flightPlanManager.addWaypoint(waypoint.icao, wpIndex, () => {
-                        console.log("Inserted waypoint: " + routeIdent);
-                        res(true);
-                    });
-                } else {
-                    console.log('NOT IN DATABASE ' + routeIdent);
-                    mcdu.addNewMessage(NXSystemMessages.notInDatabase);
-                    res(false);
-                }
-            });
-        });
-    }
+    });
 };
 
 const uplinkRoute = async (mcdu) => {
     const {navlog} = mcdu.simbrief;
-
-    const procedures = new Set(navlog.filter(fix => fix.is_sid_star === "1").map(fix => fix.via_airway));
 
     for (let i = 0; i < navlog.length; i++) {
         const fix = navlog[i];
@@ -302,28 +287,11 @@ const uplinkRoute = async (mcdu) => {
             continue;
         }
 
-        console.log('---- ' + fix.ident + ' ----');
+        const thisVia = fix.via_airway === 'DCT' ? undefined : fix.via_airway;
+        const nextVia = nextFix.via_airway === 'DCT' || nextFix.is_sid_star === '1' ? undefined : nextFix.via_airway;
 
-        // Last SID fix - either it's airway is in the list of procedures, or
-        // this is the very first fix in the route (to deal with procedures
-        // that only have an exit fix, which won't be caught when filtering)
-        if (procedures.has(fix.via_airway) || (i == 0)) {
-            console.log("Inserting waypoint last of DEP: " + fix.ident);
-            await addWaypointAsync(fix, mcdu, fix.ident);
-            continue;
-        } else {
-            if (fix.via_airway === 'DCT') {
-                console.log("Inserting waypoint: " + fix.ident);
-                await addWaypointAsync(fix, mcdu, fix.ident);
-                continue;
-            }
-            if (nextFix.via_airway !== fix.via_airway) {
-                // last fix of airway
-                console.log("Inserting waypoint: " + fix.ident + " via " + fix.via_airway);
-                await addWaypointAsync(fix, mcdu, fix.ident, fix.via_airway);
-                continue;
-            }
-        }
+        console.log("Inserting waypoint: " + fix.ident);
+        await addWaypointAsync(fix, mcdu, fix.ident, thisVia, nextVia);
     }
 };
 
