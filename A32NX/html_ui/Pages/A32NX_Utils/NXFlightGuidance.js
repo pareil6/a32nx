@@ -19,8 +19,8 @@ class NXFlightGuidance {
         const updatedWaypoints = this.updateWaypoints();
         if (updatedWaypoints) {
             this.updateLegs();
-            console.log(`WPs: (${this.lastWaypoint ? this.lastWaypoint.ident : "null"}) - ${this.fromWaypoint ? this.fromWaypoint.ident : null} - ${this.toWaypoint ? this.toWaypoint.ident : null} - (${this.nextToWaypoint ? this.nextToWaypoint.ident : null})`);
-            console.log(`Tracks: (${Math.round(lastLegTrack)}) - ${Math.round(activeLegTrack)} - (${Math.round(nextLegTrack)})`);
+            //console.log(`WPs: (${this.lastWaypoint ? this.lastWaypoint.ident : "null"}) - ${this.fromWaypoint ? this.fromWaypoint.ident : null} - ${this.toWaypoint ? this.toWaypoint.ident : null} - (${this.nextToWaypoint ? this.nextToWaypoint.ident : null})`);
+            //console.log(`Tracks: (${Math.round(lastLegTrack)}) - ${Math.round(activeLegTrack)} - (${Math.round(nextLegTrack)})`);
         }
         this.updateErrors();
 
