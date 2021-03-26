@@ -161,7 +161,7 @@ var A320_Neo_LowerECAM_Fuel;
             }
         }
         updateFuelFlow() {
-            const totalFuelFlow = (SimVar.GetSimVarValue("L:A32NX_ENGINE_FF:1", "number") + SimVar.GetSimVarValue("L:A32NX_ENGINE_FF:2", "number")) / 60;
+            const totalFuelFlow = (SimVar.GetSimVarValue("L:A32NX_ENGINE_FF:1", "number") + SimVar.GetSimVarValue("L:A32NX_ENGINE_FF:2", "number")) * this.conversionWeight / 60;
             this.fuelFlowValue.textContent = fastToFixed(totalFuelFlow, 0);
         }
         updateFuelConsumption() {
