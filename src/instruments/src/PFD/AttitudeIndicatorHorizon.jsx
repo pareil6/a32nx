@@ -213,8 +213,8 @@ const TailstrikeIndicator = () => {
     // for that
     if (getSimVar('PLANE ALT ABOVE GROUND MINUS CG', 'feet') > 400
         || getSimVar('AIRSPEED INDICATED', 'knots') < 50
-        || getSimVar('GENERAL ENG THROTTLE LEVER POSITION:1', 'percent over 100') >= 0.95
-        || getSimVar('GENERAL ENG THROTTLE LEVER POSITION:2', 'percent over 100') >= 0.95) {
+        || getSimVar('L:A32NX_AUTOTHRUST_TLA:1', 'number') >= 35
+        || getSimVar('L:A32NX_AUTOTHRUST_TLA:2', 'number') >= 35) {
         return null;
     }
 
