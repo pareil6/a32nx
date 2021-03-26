@@ -63,6 +63,9 @@ class FlyByWireInterface {
   bool flightDirectorLatch_1 = false;
   bool flightDirectorLatch_2 = false;
 
+  bool autolandWarningLatch = false;
+  bool autolandWarningTriggered = false;
+
   FlightDataRecorder flightDataRecorder;
 
   SimConnectInterface simConnectInterface;
@@ -99,6 +102,8 @@ class FlyByWireInterface {
   ID idFlightDirectorBank;
   ID idFlightDirectorPitch;
   ID idFlightDirectorYaw;
+
+  ID idAutopilotAutolandWarning;
 
   ID idAutopilotActiveAny;
   ID idAutopilotActive_1;

@@ -172,6 +172,9 @@ void FlyByWireInterface::setupLocalVariables() {
   idFlightDirectorPitch = register_named_variable("A32NX_FLIGHT_DIRECTOR_PITCH");
   idFlightDirectorYaw = register_named_variable("A32NX_FLIGHT_DIRECTOR_YAW");
 
+  // register L variables for autoland warning
+  idAutopilotAutolandWarning = register_named_variable("A32NX_AUTOPILOT_AUTOLAND_WARNING");
+
   // register L variables for autopilot
   idAutopilotActiveAny = register_named_variable("A32NX_AUTOPILOT_ACTIVE");
   idAutopilotActive_1 = register_named_variable("A32NX_AUTOPILOT_1_ACTIVE");
@@ -537,6 +540,27 @@ bool FlyByWireInterface::updateAutopilotStateMachine(double sampleTime) {
     currentApproachCapability = newApproachCapability;
     set_named_variable_value(idFmaApproachCapability, currentApproachCapability);
     previousApproachCapabilityUpdateTime = simData.simulationTime;
+  }
+
+  // autoland warning -------------------------------------------------------------------------------------------------
+  // if at least one AP engaged and LAND or FLARE mode -> latch
+  if (simData.H_radio_ft < 200 && numberOfAutopilotsEngaged > 0 &&
+      (autopilotStateMachineOutput.vertical_mode == 32 || autopilotStateMachineOutput.vertical_mode == 33)) {
+    autolandWarningLatch = true;
+  } else if (simData.H_radio_ft >= 200 ||
+             (autopilotStateMachineOutput.vertical_mode != 32 && autopilotStateMachineOutput.vertical_mode != 33)) {
+    autolandWarningLatch = false;
+    autolandWarningTriggered = false;
+    set_named_variable_value(idAutopilotAutolandWarning, 0);
+  }
+
+  if (autolandWarningLatch && !autolandWarningTriggered) {
+    if (numberOfAutopilotsEngaged == 0 ||
+        (simData.H_radio_ft > 15 && (abs(simData.nav_loc_error_deg) > 0.2 || simData.nav_loc_valid == false)) ||
+        (simData.H_radio_ft > 100 && (abs(simData.nav_gs_error_deg) > 0.4 || simData.nav_gs_valid == false))) {
+      autolandWarningTriggered = true;
+      set_named_variable_value(idAutopilotAutolandWarning, 1);
+    }
   }
 
   // return result ----------------------------------------------------------------------------------------------------
