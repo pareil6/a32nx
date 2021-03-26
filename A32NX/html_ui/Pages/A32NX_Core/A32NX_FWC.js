@@ -333,10 +333,6 @@ class A32NX_FWC {
         const currentAltitudeConstraint = SimVar.GetSimVarValue("L:A32NX_AP_CSTN_ALT", "feet");
         const currentFCUAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet");
         const targetAltitude = currentAltitudeConstraint && !this.hasAltitudeConstraint() ? currentAltitudeConstraint : currentFCUAltitude;
-        if (currentFCUAltitude === 0) {
-            // Use default 5,000 number on init process due to late update
-            SimVar.SetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet", 5000);
-        }
 
         // Exit when selected altitude is being changed
         if (this.previousTargetAltitude !== targetAltitude) {
