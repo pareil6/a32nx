@@ -329,24 +329,37 @@ class A32NX_FWC {
             SimVar.SetSimVarValue("L:A32NX_ALT_DEVIATION", "Bool", false);
         }
 
-        // Exit when:
-        // - Landing gear down
-        // - Glide slope captured
-        const landingGearIsDown = !SimVar.GetSimVarValue("IS GEAR RETRACTABLE", "Boolean") || SimVar.GetSimVarValue("GEAR HANDLE POSITION", "Boolean");
-        const verticalMode = SimVar.GetSimVarValue("L:A32NX_FMA_VERTICAL_MODE", "Number");
-        const glideSlopeCaptured = verticalMode >= 30 && verticalMode <= 34;
-        if (landingGearIsDown || glideSlopeCaptured) {
-            return;
-        }
-
-        // Use the constraint altitude if provided otherwise use selected altitude lock value
+        // Use FCU displayed value
         const currentAltitudeConstraint = SimVar.GetSimVarValue("L:A32NX_AP_CSTN_ALT", "feet");
         const currentFCUAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet");
         const targetAltitude = currentAltitudeConstraint && !this.hasAltitudeConstraint() ? currentAltitudeConstraint : currentFCUAltitude;
+        if (currentFCUAltitude === 0) {
+            // Use default 5,000 number on init process due to late update
+            SimVar.SetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet", 5000);
+        }
 
         // Exit when selected altitude is being changed
         if (this.previousTargetAltitude !== targetAltitude) {
             this.previousTargetAltitude = targetAltitude;
+            this._wasBellowThreshold = false;
+            this._wasAboveThreshold = false;
+            this._wasInRange = false;
+            this._wasReach200ft = false;
+            SimVar.SetSimVarValue("L:A32NX_ALT_DEVIATION_SHORT", "Bool", false);
+            SimVar.SetSimVarValue("L:A32NX_ALT_DEVIATION", "Bool", false);
+            return;
+        }
+
+        // Exit when:
+        // - Landing gear down & slats extended
+        // - Glide slope captured
+        // - Landing locked down
+
+        const landingGearIsDown = SimVar.GetSimVarValue("FLAPS HANDLE INDEX", "Enum") >= 1 && SimVar.GetSimVarValue("GEAR HANDLE POSITION", "Boolean");
+        const verticalMode = SimVar.GetSimVarValue("L:A32NX_FMA_VERTICAL_MODE", "Number");
+        const glideSlopeCaptured = verticalMode >= 30 && verticalMode <= 34;
+        const landingGearIsLockedDown = SimVar.GetSimVarValue("GEAR POSITION:0", "Enum") > 0.9;
+        if (landingGearIsDown || glideSlopeCaptured || landingGearIsLockedDown) {
             this._wasBellowThreshold = false;
             this._wasAboveThreshold = false;
             this._wasInRange = false;
