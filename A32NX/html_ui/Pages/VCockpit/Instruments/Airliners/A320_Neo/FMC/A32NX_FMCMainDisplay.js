@@ -209,6 +209,7 @@ class FMCMainDisplay extends BaseAirliners {
         this.dataManager = new FMCDataManager(this);
 
         this.flightPhaseManager = new A32NX_FlightPhaseManager(this);
+        this._flightGuidance = new NXFlightGuidance(this);
 
         this.tempCurve = new Avionics.Curve();
         this.tempCurve.interpolationFunction = Avionics.CurveTool.NumberInterpolation;
