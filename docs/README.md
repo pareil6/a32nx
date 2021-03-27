@@ -8,7 +8,7 @@
 
 ### Known issues
 
-⚠️ The engine model is not yet finished for all conditions. Most importantly, you need to start on the runway for the time being!
+⚠️ The engine model is not yet finished for all conditions.
 
 ⚠️ The custom autopilot and autothrust system is not yet on study level. In order to achieve this level a longer effort is needed. The system is a large improvement over the default implementation and there is no reason to hold it back longer than necessary.
 
